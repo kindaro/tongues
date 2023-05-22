@@ -1,0 +1,29 @@
+cabal-version: 3.8
+name: tongues
+version: 0.1.0.0
+
+common commons
+  build-depends: base, fancy, mtl, text
+  default-language: GHC2021
+  default-extensions:
+    BlockArguments
+    LambdaCase
+    NoImplicitPrelude
+    OverloadedStrings
+    TypeFamilies
+    UnicodeSyntax
+    DerivingVia
+    ViewPatterns
+
+  ghc-options: -Wall -Wextra -Wno-star-is-type -Wno-missing-signatures
+
+library
+  import: commons
+  hs-source-dirs: library
+  exposed-modules: Fingers, Niceties, Renamingless, Named, Endly
+
+test-suite checks
+  import: commons
+  hs-source-dirs: test-suites/checks
+  main-is: Main.hs
+  build-depends: tongues, generic-random, quickcheck-instances
