@@ -17,11 +17,7 @@ instance Arbitrary Mark where
     otherLetters ← listOf letter
     pure do (Mark ∘ Text.pack) (firstLetter: otherLetters)
   shrink (Mark (Text.unpack → head: tail)) = fmap (Mark ∘ Text.pack) do zipWith (:) (shrink head) (shrink tail)
-  shrink _ = error "Impossible: markers are never zero length."
-
-class At saying where (@) ∷ saying → saying → saying
-infixl 9 @
-class WingedWords saying where y, k, zero, s, i ∷ saying
+  shrink _ = error "Impossible: marks are never zero length."
 
 (!?) :: [α] -> ℕ -> Maybe α
 [ ] !? _ = Nothing

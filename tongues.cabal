@@ -3,7 +3,7 @@ name: tongues
 version: 0.1.0.0
 
 common commons
-  build-depends: base, fancy, mtl, text
+  build-depends: base, fancy, mtl, text, pretty-simple, recursion-schemes, data-fix
   default-language: GHC2021
   default-extensions:
     BlockArguments
@@ -26,4 +26,4 @@ test-suite checks
   import: commons
   hs-source-dirs: test-suites/checks
   main-is: Main.hs
-  build-depends: tongues, generic-random, quickcheck-instances
+  build-depends: tongues, generic-random, quickcheck-instances, transformers
