@@ -64,6 +64,9 @@ compose = (Abstraction ∘ Abstraction ∘ Abstraction) (Application (Reference 
 exponentiate ∷ Saying
 exponentiate = (Abstraction ∘ Abstraction) (Reference 1 `Application` (compose `Application` (Reference 0)) `Application` sayingOfNatural 1)
 
+isZero ∷ Saying
+isZero = Abstraction (Reference 0 `Application` (true `Application` false) `Application` true)
+
 (@) ∷ Saying → Saying → Saying
 function @ argument = Application function argument
 infixl 9 @

@@ -29,6 +29,8 @@ main = checks do
       base = n `mod` 4
       exponent = m `mod` 6
       in fixedPoint ease (exponentiate  @ sayingOfNatural exponent @ sayingOfNatural base) ↔ fixedPoint ease (sayingOfNatural (base ^ exponent))
+    checkProperty "zero is zero" do fixedPoint ease (isZero @ sayingOfNatural 0) ↔ true
+    checkProperty "successor is not zero" \ n → fixedPoint ease (isZero @ sayingOfNatural (n + 1)) ↔ false
   checkPropertiesOf "category" do
     checkPropertiesOf "identity" do
       checkProperty "before" \ f x → fixedPoint ease ((f • identity) @ x) ↔ fixedPoint ease (f @ x)
