@@ -1,6 +1,5 @@
+-- | Nicolas Govert de Bruijn's fingers au jus.
 module Fingers where
-
--- ^ Nicolas Govert de Bruijn's fingers au jus.
 
 import Prelude.Fancy
 
@@ -51,7 +50,7 @@ sayingOfBoolean False = false
 sayingOfBoolean True = true
 
 sayingOfNatural ∷ ℕ → Saying = fmap (Abstraction ∘ Abstraction) do
-  fix \ recurse → \ case
+  fix \recurse → \case
     Zero → Reference Zero
     Successor n → Application (Reference 1) (recurse n)
 
@@ -66,6 +65,34 @@ exponentiate = (Abstraction ∘ Abstraction) (Reference 1 `Application` (compose
 
 isZero ∷ Saying
 isZero = Abstraction (Reference 0 `Application` (true `Application` false) `Application` true)
+
+conditional ∷ Saying
+conditional = (Abstraction ∘ Abstraction ∘ Abstraction) (Reference 2 `Application` Reference 1 `Application` Reference 0)
+
+twosome ∷ Saying
+twosome = (Abstraction ∘ Abstraction ∘ Abstraction) (conditional `Application` Reference 0 `Application` Reference 2 `Application` Reference 1)
+
+predecessor ∷ Saying
+-- λn. λfx.
+-- n (λx'.
+-- if (isZero (π₀ x'))
+-- then (1 :× π₁ x')
+-- else (π₀ x' :× f (π₁ x')))
+-- (0 :× x)
+predecessor =
+  (Abstraction ∘ Abstraction ∘ Abstraction)
+    ( ( Reference 2
+          `Application` ( Abstraction
+                            ( conditional
+                                `Application` (isZero `Application` (Reference 0 `Application` true))
+                                `Application` (twosome `Application` sayingOfNatural 1 `Application` (Reference 0 `Application` false))
+                                `Application` (twosome `Application` (Reference 0 `Application` true) `Application` (Reference 2 `Application` (Reference 0 `Application` false)))
+                            )
+                        )
+          `Application` (twosome `Application` sayingOfNatural 0 `Application` Reference 0)
+      )
+        `Application` false
+    )
 
 (@) ∷ Saying → Saying → Saying
 function @ argument = Application function argument
