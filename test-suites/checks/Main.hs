@@ -2,12 +2,10 @@
 
 module Main where
 
-import Prelude.Fancy hiding (exponent, i, predecessor)
+import Prelude.Fancy hiding (exponent, predecessor)
 import Prelude.Fancy.QuickCheck
 
 import Fingers
-import Niceties
-import Renamingless qualified
 
 import Generic.Random
 import Test.QuickCheck.Instances.Natural ()
@@ -25,7 +23,7 @@ main = checks do
     checkProperty "zero = false" do sayingOfNatural Zero ↔ false
     checkProperty "add = (+)" \n m → fixedPoint ease (add @ sayingOfNatural n @ sayingOfNatural m) ↔ fixedPoint ease (sayingOfNatural (n + m))
     checkProperty "compose = (×)" \n m → fixedPoint ease (sayingOfNatural n • sayingOfNatural m) ↔ fixedPoint ease (sayingOfNatural (n × m))
-    checkProperty "exponentiate = (^)" \n m → let {base = n `mod` 4; exponent = m `mod` 6} in fixedPoint ease (exponentiate @ sayingOfNatural exponent @ sayingOfNatural base) ↔ fixedPoint ease (sayingOfNatural (base ^ exponent))
+    checkProperty "exponentiate = (^)" \n m → let base = n `mod` 4; exponent = m `mod` 6 in fixedPoint ease (exponentiate @ sayingOfNatural exponent @ sayingOfNatural base) ↔ fixedPoint ease (sayingOfNatural (base ^ exponent))
     checkProperty "predecessor" \n → let n' = n `mod` 10 in fixedPoint ease (predecessor @ sayingOfNatural n') ↔ sayingOfNatural if n' ≡ 0 then 0 else (n' − 1)
   checkPropertiesOf "Boolean numbers" do
     checkProperty "zero is zero" do fixedPoint ease (isZero @ sayingOfNatural 0) ↔ true
