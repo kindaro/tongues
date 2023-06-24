@@ -1,3 +1,4 @@
+{-# OPTIONS_GHC -Wno-name-shadowing #-}
 {-# OPTIONS_GHC -Wno-orphans #-}
 
 module Main where
@@ -37,3 +38,15 @@ main = checks do
       checkProperty "before" \f x → fixedPoint ease ((f • identity) @ x) ↔ fixedPoint ease (f @ x)
       checkProperty "after" \f x → fixedPoint ease ((identity • f) @ x) ↔ fixedPoint ease (f @ x)
     checkProperty "associativity" \f g h x → fixedPoint ease (((h • g) • f) @ x) ↔ fixedPoint ease ((h • (g • f)) @ x)
+  checkPropertiesOf "functors" do
+    checkPropertiesOf "twosome" do
+      checkProperty "fmap id" \left right → fixedPoint ease (fmap_twosome @ identity @ (left # right)) ↔ fixedPoint ease (left # right)
+      checkProperty "fmap compose" \left right f g → fixedPoint ease (fmap_twosome @ (g • f) @ (left # right)) ↔ fixedPoint ease ((fmap_twosome @ g • fmap_twosome @ f) @ (left # right))
+    checkPropertiesOf "arrow" do
+      checkProperty "fmap id" \f x → fixedPoint ease (fmap_arrow @ identity @ f @ x) ↔ fixedPoint ease (f @ x)
+      checkProperty "fmap compose" \f g h x → fixedPoint ease (fmap_twosome @ (g • f) @ h @ x) ↔ fixedPoint ease ((fmap_twosome @ g • fmap_twosome @ f) @ h @ x)
+  checkPropertiesOf "adjunctions" do
+    checkProperty "φ identity = η" do fixedPoint ease (φ_twosome_arrow @ identity) ↔ fixedPoint ease η_state
+    checkProperty "ψ identity = ε" do fixedPoint ease (ψ_twosome_arrow @ identity) ↔ fixedPoint ease ε_store
+    checkProperty "μ from δ" do fixedPoint ease (fmap_arrow @ (ε_store • fmap_twosome @ ε_store • δ_twosome) • η_state) ↔ μ_arrow
+    checkProperty "δ from μ" do fixedPoint ease (ε_store • fmap_twosome @ (μ_arrow • fmap_arrow @ η_state • η_state)) ↔ fixedPoint ease ((ψ_twosome_arrow • φ_twosome_arrow) @ δ_twosome)

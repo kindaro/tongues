@@ -1,6 +1,8 @@
 -- | Nicolas Govert de Bruijn's fingers au jus.
 module Fingers where
 
+import Data.Text qualified as Text
+import Data.Text.IO qualified as Text
 import Prelude.Fancy
 
 data Saying = Abstraction Saying | Application Saying Saying | Reference ℕ deriving (Show, Eq, Ord, Generic)
@@ -101,3 +103,48 @@ infixl 9 @
 (•) ∷ Saying → Saying → Saying
 after • before = compose @ after @ before
 infixl 8 •
+
+λ ∷ Saying → Saying
+λ = Abstraction
+
+x ∷ ℕ → Saying
+x = Reference
+
+-- | Tuple constructor.
+(#) ∷ Saying → Saying → Saying
+left # right = twosome @ left @ right
+
+λπ₀ ∷ Saying → Saying
+λπ₀ tuple = tuple @ true
+λπ₁ ∷ Saying → Saying
+λπ₁ tuple = tuple @ false
+
+ε_twosome, δ_twosome, ε_store, η_state, fmap_twosome, fmap_arrow ∷ Saying
+ε_twosome = λ (x 0 @ true)
+δ_twosome = λ (x 0 # λπ₁ (x 0))
+ε_store = λ (λπ₀ (x 0) @ λπ₁ (x 0))
+η_state = λ (λ (x 1 # x 0))
+φ_twosome_arrow = λ (fmap_arrow @ x 0 • η_state)
+ψ_twosome_arrow = λ (ε_store • fmap_twosome @ x 0)
+η_arrow = true
+μ_arrow = λ (λ (x 1 @ x 0 @ x 0))
+fmap_twosome = (λ ∘ λ) (x 1 @ (x 0 @ true) # (x 0 @ false))
+fmap_arrow = (λ ∘ λ) (x 1 • x 0)
+
+prettyPrint ∷ Saying → IO ()
+prettyPrint =
+  Text.putStrLn ∘ fix \recurse → \case
+    Abstraction (Reference 0 `Application` left `Application` right) → parenthesize (Text.unwords [recurse (slump left), "#", recurse (slump right)])
+    Abstraction saying → Text.unwords ["λ.", recurse saying]
+    Application function argument → writ Text.unwords do
+      say do if hasRightmostLambda function then parenthesize (recurse function) else recurse function
+      say do case argument of { (Application _ _) → parenthesize (recurse argument); _ → recurse argument }
+    Reference n → show n
+ where
+  hasRightmostLambda ∷ Saying → 𝔹
+  hasRightmostLambda (Abstraction _) = True
+  hasRightmostLambda (Application _ argument) = hasRightmostLambda argument
+  hasRightmostLambda (Reference _) = False
+
+  parenthesize ∷ Text → Text
+  parenthesize text = "(" ⊕ text ⊕ ")"
